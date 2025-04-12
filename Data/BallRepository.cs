@@ -1,46 +1,58 @@
 namespace Data;
 
-    public class BallRepository
+public abstract class BallRepositoryAPI
+{
+    public static BallRepositoryAPI CreateRepository()
     {
-        private List<Ball> balls = new();
+        return new BallRepository();
+    }
 
-        public void AddBall(Ball obj)
+    public abstract void AddBall(BallAPI obj);
+    public abstract void ClearStorage();
+    public abstract List<BallAPI> GetAllBalls();
+    public abstract void RemoveBall(BallAPI obj);
+    public abstract int GetSize();
+    public abstract BallAPI GetBallByID(int id);
+
+    private class BallRepository : BallRepositoryAPI
+    {
+        private readonly List<BallAPI> balls = new();
+
+        public override void AddBall(BallAPI obj)
         {
             balls.Add(obj);
         }
 
-        public void ClearStorage()
+        public override void ClearStorage()
         {
             balls.Clear();
         }
 
-        public List<Ball> GetAllBalls()
+        public override List<BallAPI> GetAllBalls()
         {
             return balls;
         }
 
-        public void RemoveBall(Ball obj)
+        public override void RemoveBall(BallAPI obj)
         {
             balls.Remove(obj);
         }
 
-        public int getSize()
+        public override int GetSize()
         {
-            return balls.Count();
+            return balls.Count;
         }
 
-        public static BallRepository createRepository()
+        public override BallAPI GetBallByID(int id)
         {
-            return new BallRepository();
-        }
-
-        public Ball getBallByID(int id) {
-            foreach (Ball ball in balls) {  
-                if (ball.ID == id) {
-                    return ball; 
+            foreach (BallAPI ball in balls)
+            {
+                if (ball.ID == id)
+                {
+                    return ball;
                 }
+            }
+            return null;
         }
-         return null;  
-        }
-
     }
+}

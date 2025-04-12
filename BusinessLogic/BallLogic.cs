@@ -7,25 +7,25 @@ namespace BusinessLogic
 {
     public abstract class BallLogicAPI
     {
-        public static BallLogicAPI CreateLogic(int mapWidth, int mapHeight, BallRepository? repo = null)
+        public static BallLogicAPI CreateLogic(int mapWidth, int mapHeight, BallRepositoryAPI? repo = null)
         {
-            return new BallLogic(mapWidth, mapHeight, repo ?? new BallRepository());
+            return new BallLogic(mapWidth, mapHeight, repo ?? BallRepositoryAPI.CreateRepository());
         }
 
         public abstract void CreateBall(int ballID, double x, double y, double radius, string color, int XDirection, int YDirection);
-        public abstract void RemoveBall(Ball ball);
+        public abstract void RemoveBall(BallAPI ball);
         public abstract int GetMapWidth();
         public abstract int GetMapHeight();
-        public abstract Ball GetBallByID(int id);
-        public abstract List<Ball> GetBalls();  
-        public abstract void MoveBall(Ball ball);
+        public abstract BallAPI GetBallByID(int id);
+        public abstract List<BallAPI> GetBalls();  
+        public abstract void MoveBall(BallAPI ball);
         public abstract void UpdateBalls();
 
         public abstract int GetSize();
 
-        public abstract void createNBalls(int amount);
+        public abstract void createNBalls(int amount, double radius);
 
-        public abstract void createRandomBall();
+        public abstract void createRandomBall(double radius);
 
         public abstract void ClearMap();
 
@@ -33,9 +33,9 @@ namespace BusinessLogic
         {
             private readonly int mapWidth;
             private readonly int mapHeight;
-            private readonly BallRepository repository;
+            private readonly BallRepositoryAPI repository;
 
-            public BallLogic(int mapWidth, int mapHeight, BallRepository repository)
+            public BallLogic(int mapWidth, int mapHeight, BallRepositoryAPI repository)
             {
                 this.repository = repository;
                 this.mapHeight = mapHeight;
@@ -44,21 +44,21 @@ namespace BusinessLogic
 
             public override void CreateBall(int ballID, double x, double y, double radius, string color, int XDirection, int YDirection)
             {
-                var ball = Ball.createBall(repository.getSize() + 1, x, y, radius, color, XDirection, YDirection);  // Zakładając, że `createBall` jest statyczną metodą klasy `Ball`
+                var ball = BallAPI.createBall(repository.GetSize() + 1, x, y, radius, color, XDirection, YDirection);  // Zakładając, że `createBall` jest statyczną metodą klasy `Ball`
                 repository.AddBall(ball);
             }
 
-            public override void RemoveBall(Ball ball)
+            public override void RemoveBall(BallAPI ball)
             {
                 repository.RemoveBall(ball);
             }
 
-            public override Ball GetBallByID(int id)
+            public override BallAPI GetBallByID(int id)
             {
-                return repository.getBallByID(id);
+                return repository.GetBallByID(id);
             }
 
-            public override List<Ball> GetBalls()  // Poprawiona metoda
+            public override List<BallAPI> GetBalls()  // Poprawiona metoda
             {
                 return repository.GetAllBalls();
             }
@@ -73,7 +73,7 @@ namespace BusinessLogic
                 return mapHeight;
             }
 
-            public override void MoveBall(Ball ball)
+            public override void MoveBall(BallAPI ball)
             {
                 // Sprawdzenie odbicia od ścian poziomych (X)
                 if (ball.X + ball.XDirection - ball.Radius < 0 || ball.X + ball.XDirection + ball.Radius > mapWidth)
@@ -119,15 +119,15 @@ namespace BusinessLogic
                 }
             }
 
-            public override void createNBalls(int amount){
+            public override void createNBalls(int amount, double radius){
 
                 for(int i = 0; i< amount; i++){
-                    createRandomBall();
+                    createRandomBall(radius);
                 }
 
             }
 
-           public override void createRandomBall()
+           public override void createRandomBall(double radius)
                 {
                 Random random = new Random();
 
@@ -140,23 +140,23 @@ namespace BusinessLogic
                     yRandom = random.Next(-5, 6);
                 }
 
-                double radius = random.Next(10, 20); 
                 double x = random.Next((int)radius, mapWidth - (int)radius);
                 double y = random.Next((int)radius, mapHeight - (int)radius);
 
                 string color = "#" + random.Next(0x1000000).ToString("X6"); 
 
-                this.CreateBall(repository.getSize() + 1, x, y, radius, color, xRandom, yRandom);
+                this.CreateBall(repository.GetSize() + 1, x, y, radius, color, xRandom, yRandom);
                 }
 
                 public override int GetSize(){
-                    return this.repository.getSize();
+                    return this.repository.GetSize();
                 }
 
-            public override void ClearMap()
-            {
-               this.repository.ClearStorage();
-            }
+                public override void ClearMap()
+                {
+                this.repository.ClearStorage();
+                }
+                
                 }
             }
     }
