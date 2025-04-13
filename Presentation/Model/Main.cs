@@ -13,7 +13,7 @@ namespace Presentation.Model
     
         public abstract void Move();
         public abstract List<BallAPI> GetBalls();
-        public abstract void CreateBalls(int amount, double radius);
+        public abstract void CreateBalls(int amount);
         public abstract void ClearMap();
 
         private class Main : MainAPI
@@ -37,9 +37,9 @@ namespace Presentation.Model
             {
                 return this.ballLogic.GetBalls(); 
             }
-            public override void CreateBalls(int amount, double radius)
+            public override void CreateBalls(int amount)
             {
-                this.ballLogic.createNBalls(amount, radius); 
+                this.ballLogic.createNBalls(amount); 
             }
 
             public override void ClearMap()

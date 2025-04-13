@@ -12,7 +12,6 @@ namespace Presentation.ModelView
         private MainAPI modelLayer;
 
         private string _amount = "";
-        private string _radius = "";
 
         public int _width = 700;
         public int _height = 500;
@@ -20,13 +19,16 @@ namespace Presentation.ModelView
         private bool _pauseFlag = false;
         private bool _resumeFlag = false;
 
+        private bool _summonFlag = true;
+        private bool _clearFlag = false;
+
         public ModelView()
         {
             this.modelLayer = MainAPI.CreateMap(_width, _height);
             Balls = new ObservableCollection<BallAPI>(modelLayer.GetBalls());
 
-            SummonCommand = new RelayCommand(SummonBalls);
-            ClearCommand = new RelayCommand(ClearBalls);
+            SummonCommand = new RelayCommand(SummonBalls, () => !_clearFlag);
+            ClearCommand = new RelayCommand(ClearBalls, () => _clearFlag);
             StartCommand = new RelayCommand(StartBalls, () => !_pauseFlag);
             StopCommand = new RelayCommand(StopBalls, () => _pauseFlag);
         }
@@ -49,27 +51,19 @@ namespace Presentation.ModelView
             }
         }
 
-        public string Radius
-        {
-            get => _radius;
-            set
-            {
-                _radius = value;
-                RaisePropertyChanged();
-            }
-        }
-
         private void SummonBalls()
         {
             try
             {
                 int ballsNum = int.Parse(_amount);
-                double rad = double.Parse(_radius);
+                _clearFlag = true;
+                 SummonCommand.RaiseCanExecuteChanged();
+                 ClearCommand.RaiseCanExecuteChanged();
 
                 if (ballsNum < 0)
                     throw new ArgumentException("Not a positive integer");
 
-                modelLayer.CreateBalls(ballsNum, rad);
+                modelLayer.CreateBalls(ballsNum);
                 Balls = new ObservableCollection<BallAPI>(modelLayer.GetBalls());
                 RaisePropertyChanged(nameof(Balls));
             }
@@ -82,7 +76,7 @@ namespace Presentation.ModelView
 
         private void StartBalls()
         {
-            Console.WriteLine("StartBalls clicked!");
+   
             _pauseFlag = true;
             _resumeFlag = false;
 
@@ -119,16 +113,19 @@ namespace Presentation.ModelView
         {
             modelLayer.ClearMap();
             _pauseFlag = false;
-            _resumeFlag = false;
+            _clearFlag = false;
 
-            _radius = "";
+            SummonCommand.RaiseCanExecuteChanged();
+            ClearCommand.RaiseCanExecuteChanged();
+
             _amount = "";
 
-            ClearCommand.RaiseCanExecuteChanged();
+            
             Balls = new ObservableCollection<BallAPI>(modelLayer.GetBalls());
             RaisePropertyChanged(nameof(Balls));
             RaisePropertyChanged(nameof(Amount));
-            RaisePropertyChanged(nameof(Radius));
+            StartCommand.RaiseCanExecuteChanged();
+            StopCommand.RaiseCanExecuteChanged();
               
         }
     }

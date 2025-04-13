@@ -49,80 +49,59 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <TextBox Name="RadiusTextBox"
-                 Width="92" Height="29"
-                 FontSize="16"
-                 FontFamily="Segoe UI"
-                 Background="White"
-                 HorizontalAlignment="Left"
-                 VerticalAlignment="Top"
-                 Margin="901,241,0,0"
-                 Text="{Binding Radius}" />
+<StackPanel Orientation="Vertical"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="800,200,0,0"
+            Width="100"
+            Height="Auto"
+            Background="Transparent"
+            >
 
-        <TextBox Name="AmountTextBox"
-                 Width="92" Height="28"
-                 FontSize="16"
-                 FontFamily="Segoe UI"
-                 Background="White"
-                 HorizontalAlignment="Left"
-                 VerticalAlignment="Top"
-                 Margin="901,327,0,0"
-                 Text="{Binding Amount}" />
+    <TextBlock Text="Amount" 
+               FontSize="24" 
+               FontFamily="Segoe UI" 
+               Foreground="Black"
+               Margin="5,0,0,5"/>
 
-        <TextBlock Text="Radius" 
-                  HorizontalAlignment="Left" 
-                  VerticalAlignment="Top" 
-                  FontSize="24" 
-                  FontFamily="Segoe UI" 
-                  Foreground="Black"
-                  Margin="915,204,0,0"/>
+    <TextBox Name="AmountTextBox"
+             Width="92" Height="28"
+             FontSize="16"
+             FontFamily="Segoe UI"
+             Background="White"
+             Text="{Binding Amount}"
+             Margin="0,0,0,20"/>
 
-        <TextBlock Text="Amount" 
-                  HorizontalAlignment="Left" 
-                  VerticalAlignment="Top" 
-                  FontSize="24" 
-                  FontFamily="Segoe UI" 
-                  Foreground="Black"
-                  Margin="904,290,0,0"/>
+    <Button Content="Summon"
+            Width="92" Height="28"
+            FontSize="16"
+            FontFamily="Segoe UI"
+            Background="White"
+            Command="{Binding SummonCommand}"
+            Margin="0,0,0,20"/>
 
-        <Button Content="Resume"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                Margin="306,0,0,20"
-                Width="100" Height="40"
-                FontSize="16"
-                FontFamily="Segoe UI"
-                Background="White"
-                Command="{Binding StartCommand}" />
+    <Button Content="Clear"
+            Width="92" Height="28"
+            FontSize="16"
+            FontFamily="Segoe UI"
+            Background="White"
+            Command="{Binding ClearCommand}"
+            Margin="0,0,0,20"/>
 
-        <Button Content="Stop"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Margin="0,0,306,20"
-                Width="100" Height="40"
-                FontSize="16"
-                FontFamily="Segoe UI"
-                Background="White"
-                Command="{Binding StopCommand}" />
+    <Button Content="Resume"
+            Width="92" Height="28"
+            FontSize="16"
+            FontFamily="Segoe UI"
+            Background="White"
+            Command="{Binding StartCommand}"
+            Margin="0,0,0,20"/>
 
-        <Button Content="Summon"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Width="92" Height="28"
-                FontSize="16"
-                FontFamily="Segoe UI"
-                Background="White"
-                Margin="901,380,0,0"
-                Command="{Binding SummonCommand}"/>
-
-         <Button Content="Clear"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Width="92" Height="28"
-                FontSize="16"
-                FontFamily="Segoe UI"
-                Background="White"
-                Margin="901,430,0,0"
-                Command="{Binding ClearCommand}"/>
+    <Button Content="Stop"
+            Width="92" Height="28"
+            FontSize="16"
+            FontFamily="Segoe UI"
+            Background="White"
+            Command="{Binding StopCommand}" />
+</StackPanel>
     </Grid>
 </Window>

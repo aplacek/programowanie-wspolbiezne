@@ -23,9 +23,9 @@ namespace BusinessLogic
 
         public abstract int GetSize();
 
-        public abstract void createNBalls(int amount, double radius);
+        public abstract void createNBalls(int amount);
 
-        public abstract void createRandomBall(double radius);
+        public abstract void createRandomBall();
 
         public abstract void ClearMap();
 
@@ -124,16 +124,17 @@ namespace BusinessLogic
                 }
             }
 
-            public override void createNBalls(int amount, double radius){
+            public override void createNBalls(int amount){
 
                 for(int i = 0; i< amount; i++){
-                    createRandomBall(radius);
+                    createRandomBall();
                 }
 
             }
 
-           public override void createRandomBall(double radius)
+           public override void createRandomBall()
                 {
+                double radius = 12;
                 Random random = new Random();
 
                 int xRandom = 0;
