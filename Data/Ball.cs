@@ -1,9 +1,11 @@
 namespace Data;
 public abstract class BallAPI{
 
+
     public static BallAPI createBall(int ID, double X, double Y, double radius, string color, int XDirection, int YDirection){
         return new Ball(ID,  X,  Y, radius,  color,XDirection, YDirection);
     }
+
     public int ID { get; set; }
     public double X { get; set; }
     public double Y { get; set; }
@@ -23,6 +25,7 @@ public abstract class BallAPI{
             this.Radius = radius;
             this.XDirection = XDirection;
             this.YDirection = YDirection;
+            
         }
 
     }

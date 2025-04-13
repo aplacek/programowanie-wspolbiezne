@@ -4,19 +4,19 @@
         xmlns:local="clr-namespace:Presentation.ModelView"
         Title="MainWindow" Height="600" Width="1014"
         Background="Pink">
-
-    <!-- Związanie z ViewModel -->
+        
     <Window.DataContext>
-        <local:MainWindowModelView />
+        <local:ModelView />
     </Window.DataContext>
 
     <Grid>
-        <!-- ItemsControl do wyświetlania piłek -->
+
         <ItemsControl ItemsSource="{Binding Balls}" 
                       Margin="0,0,280,0"
-                      Width="759" 
-                      Height="400" 
+                      Width="700" 
+                      Height="500" 
                       IsTabStop="False">
+
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas>
@@ -32,14 +32,14 @@
 
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding XPos}" />
-                    <Setter Property="Canvas.Top" Value="{Binding YPos}" />
+                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
                 </Style>
             </ItemsControl.ItemContainerStyle>
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Path Fill="{Binding Color}" Stroke="Black">
+                    <Path Fill="Black" Stroke="Black">
                         <Path.Data>
                             <EllipseGeometry RadiusX="{Binding Radius}"
                                              RadiusY="{Binding Radius}"/>
@@ -49,7 +49,6 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <!-- Radius TextBox -->
         <TextBox Name="RadiusTextBox"
                  Width="92" Height="29"
                  FontSize="16"
@@ -60,7 +59,6 @@
                  Margin="901,241,0,0"
                  Text="{Binding Radius}" />
 
-        <!-- Amount TextBox -->
         <TextBox Name="AmountTextBox"
                  Width="92" Height="28"
                  FontSize="16"
@@ -87,7 +85,6 @@
                   Foreground="Black"
                   Margin="904,290,0,0"/>
 
-        <!-- Resume Button -->
         <Button Content="Resume"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
@@ -98,7 +95,6 @@
                 Background="White"
                 Command="{Binding StartCommand}" />
 
-        <!-- Stop Button -->
         <Button Content="Stop"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
@@ -107,9 +103,8 @@
                 FontSize="16"
                 FontFamily="Segoe UI"
                 Background="White"
-                Command="{Binding PauseCommand}" />
+                Command="{Binding StopCommand}" />
 
-        <!-- Summon Button -->
         <Button Content="Summon"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
@@ -119,5 +114,15 @@
                 Background="White"
                 Margin="901,380,0,0"
                 Command="{Binding SummonCommand}"/>
+
+         <Button Content="Clear"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Width="92" Height="28"
+                FontSize="16"
+                FontFamily="Segoe UI"
+                Background="White"
+                Margin="901,430,0,0"
+                Command="{Binding ClearCommand}"/>
     </Grid>
 </Window>

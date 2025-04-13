@@ -43,8 +43,13 @@ namespace BusinessLogic
             }
 
             public override void CreateBall(int ballID, double x, double y, double radius, string color, int XDirection, int YDirection)
+
             {
-                var ball = BallAPI.createBall(repository.GetSize() + 1, x, y, radius, color, XDirection, YDirection);  // Zakładając, że `createBall` jest statyczną metodą klasy `Ball`
+
+                var ball = BallAPI.createBall(repository.GetSize() + 1, x, y, radius, color, XDirection, YDirection);  
+                while (ball.X + radius > mapWidth || ball.X - radius < 0 || ball.Y + radius > mapHeight || ball.Y - radius < 0){
+                    ball = BallAPI.createBall(repository.GetSize() + 1, x, y, radius, color, XDirection, YDirection);
+                }
                 repository.AddBall(ball);
             }
 
@@ -113,7 +118,7 @@ namespace BusinessLogic
 
             public override void UpdateBalls()
             {
-                foreach (var ball in repository.GetAllBalls())
+                foreach (var ball in GetBalls())
                 {
                     MoveBall(ball);
                 }
@@ -133,12 +138,24 @@ namespace BusinessLogic
 
                 int xRandom = 0;
                 int yRandom = 0;
+                
+                if (random.Next(2) == 0)
+                    {
+                    xRandom = -1;
+                    }
+                else
+                    {
+                    xRandom = 1;
+                    }
 
-                while (xRandom == 0 && yRandom == 0)
-                {
-                    xRandom = random.Next(-5, 6); 
-                    yRandom = random.Next(-5, 6);
-                }
+                if (random.Next(2) == 0)
+                    {
+                    yRandom = -1;
+                    }
+                else
+                    {
+                    yRandom = 1;
+                    }
 
                 double x = random.Next((int)radius, mapWidth - (int)radius);
                 double y = random.Next((int)radius, mapHeight - (int)radius);
