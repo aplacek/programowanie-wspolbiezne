@@ -7,7 +7,7 @@ using Data;
 
 namespace Presentation.ModelView
 {
-    class ModelView : BaseViewModel
+    public class ModelView : BaseViewModel
     {
         private MainAPI modelLayer;
 
@@ -17,9 +17,9 @@ namespace Presentation.ModelView
         public int _height = 500;
 
         private bool _pauseFlag = false;
-        private bool _resumeFlag = false;
+        //private bool _resumeFlag = false;
 
-        private bool _summonFlag = true;
+        //private bool _summonFlag = true;
         private bool _clearFlag = false;
 
         public ModelView()
@@ -78,7 +78,7 @@ namespace Presentation.ModelView
         {
    
             _pauseFlag = true;
-            _resumeFlag = false;
+            //_resumeFlag = false;
 
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();
@@ -90,7 +90,7 @@ namespace Presentation.ModelView
         {
         
             _pauseFlag = false;
-            _resumeFlag = true;
+            //_resumeFlag = true;
 
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();
