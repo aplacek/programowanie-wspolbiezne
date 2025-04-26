@@ -12,10 +12,10 @@
 
     <Viewbox Stretch="Uniform">
     <Grid>
-        <ItemsControl ItemsSource="{Binding Balls}" 
+        <ItemsControl ItemsSource="{Binding GetBalls}" 
                       Margin="20,0,280,0"
-                      Width="700" 
-                      Height="500" 
+                      Width="{Binding Width}" 
+                      Height="{Binding Height}" 
                       IsTabStop="False">
 
             <ItemsControl.ItemsPanel>

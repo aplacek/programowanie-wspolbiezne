@@ -25,8 +25,6 @@ namespace Presentation.ModelView
         public ModelView()
         {
             this.modelLayer = MainAPI.CreateMap(_width, _height);
-            Balls = new ObservableCollection<BallAPI>(modelLayer.GetBalls());
-
             SummonCommand = new RelayCommand(SummonBalls, () => !_clearFlag);
             ClearCommand = new RelayCommand(ClearBalls, () => _clearFlag);
             StartCommand = new RelayCommand(StartBalls, () => !_pauseFlag);
@@ -51,21 +49,20 @@ namespace Presentation.ModelView
             }
         }
 
+
         private void SummonBalls()
         {
             try
             {
                 int ballsNum = int.Parse(_amount);
-                _clearFlag = true;
                  SummonCommand.RaiseCanExecuteChanged();
                  ClearCommand.RaiseCanExecuteChanged();
 
                 if (ballsNum < 0)
                     throw new ArgumentException("Not a positive integer");
-
+                _clearFlag = true;
                 modelLayer.CreateBalls(ballsNum);
-                Balls = new ObservableCollection<BallAPI>(modelLayer.GetBalls());
-                RaisePropertyChanged(nameof(Balls));
+                
             }
             catch (Exception)
             {
@@ -83,7 +80,7 @@ namespace Presentation.ModelView
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();
 
-            Tick();
+            modelLayer.Move();
         }
 
         private void StopBalls()
@@ -94,20 +91,9 @@ namespace Presentation.ModelView
 
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();
+            modelLayer.StopMovement();
         }
 
-        public async void Tick()
-        {
-            while (_pauseFlag)
-            {
-                await Task.Delay(10);
-                modelLayer.Move();
-
-                Balls = new ObservableCollection<BallAPI>(modelLayer.GetBalls());
-                RaisePropertyChanged(nameof(Balls));
-              
-            }
-        }
 
         public void ClearBalls()
         {
@@ -120,9 +106,6 @@ namespace Presentation.ModelView
 
             _amount = "";
 
-            
-            Balls = new ObservableCollection<BallAPI>(modelLayer.GetBalls());
-            RaisePropertyChanged(nameof(Balls));
             RaisePropertyChanged(nameof(Amount));
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();

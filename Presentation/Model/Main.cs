@@ -15,6 +15,7 @@ namespace Presentation.Model
         public abstract List<BallAPI> GetBalls();
         public abstract void CreateBalls(int amount);
         public abstract void ClearMap();
+        public abstract void StopMovement();
 
         private class Main : MainAPI
         {
@@ -31,15 +32,20 @@ namespace Presentation.Model
             }
             public override void Move()
             {  
-                this.ballLogic.UpdateBalls(); 
+                this.ballLogic.StartAnimation();
             }
+
+            public override void StopMovement(){
+                this.ballLogic.StopAnimation();
+            }
+
             public override List<BallAPI> GetBalls()
             {
                 return this.ballLogic.GetBalls(); 
             }
             public override void CreateBalls(int amount)
             {
-                this.ballLogic.createNBalls(amount); 
+                this.ballLogic.CreateNBalls(amount);
             }
 
             public override void ClearMap()

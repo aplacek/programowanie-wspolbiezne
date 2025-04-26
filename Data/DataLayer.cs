@@ -30,14 +30,14 @@ namespace Data
 
             public DataLayer(int height, int width, string colour)
             {
-                this.board = BoardAPI.CreateBoard(height, width, colour); // 🛠 FIXED: Capital C
+                this.board = BoardAPI.CreateBoard(height, width, colour); 
                 this._threads = new();
         
             }
 
             public override void AddBall(BallAPI ball)
             {
-                double weight = 2;
+          
            
                 board.AddBall(ball);
 
@@ -49,22 +49,31 @@ namespace Data
                         {
                             ball.MoveBall();
                         }
-                        Thread.Sleep(10); //in order not to overheeat cpu 
+                        Thread.Sleep(10); //in order not to overheeat cpu :P
                     }
                 });
 
                 _threads.Add(t); 
             }
 
-            public override void StartMoving()
+        public override void StartMoving()
+        {
+            if (_moving) return;
+            _moving = true;
+
+            Task.Run(async () =>
             {
-                _moving = true;
-                foreach (Thread thread in _threads)
+                while (_moving)
                 {
-                    if (thread.ThreadState == ThreadState.Unstarted)
-                        thread.Start();
+                    foreach (var ball in board.GetBalls()) 
+                    {
+                        ball.X += ball.XDirection;
+                        ball.Y += ball.YDirection;
+                    }
+                    await Task.Delay(20); 
                 }
-            }
+            });
+        }
 
             public override void StopMoving()
             {

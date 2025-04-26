@@ -17,7 +17,6 @@ namespace BusinessLogic
         public abstract int GetMapHeight();
         public abstract List<BallAPI> GetBalls();
         public abstract void MoveBall(BallAPI ball);
-        public abstract void UpdateBalls();
         public abstract void CreateNBalls(int amount);
         public abstract void CreateRandomBall();
         public abstract void ClearMap();
@@ -35,12 +34,13 @@ namespace BusinessLogic
             private readonly int mapWidth;
             private readonly int mapHeight;
             private readonly DataLayerAPI dataLayer;
-
+            private  bool _inAction;
             public BallLogic(int mapWidth, int mapHeight)
             {
                 this.mapWidth = mapWidth;
                 this.mapHeight = mapHeight;
                 this.dataLayer = DataLayerAPI.CreateData(mapWidth, mapHeight, "white"); // Default color
+                _inAction = false;
             }
 
             public override void CreateBall(int ballID, double x, double y, double radius, string color, int XDirection, int YDirection)
@@ -54,14 +54,7 @@ namespace BusinessLogic
                 dataLayer.AddBall(ball);
             }
 
-            public override void UpdateBalls()
-            {
-                foreach (var ball in GetBalls())
-                {
-                    MoveBall(ball);
-                }
-            }
-
+    
             public override void CreateNBalls(int amount)
             {
                 for (int i = 0; i < amount; i++)
@@ -137,7 +130,11 @@ namespace BusinessLogic
 
             public override void MoveBall(BallAPI ball)
             {
+                if (!ball.IsMoving)
+                    return; // 👉 Jeśli kulka nie "rusza się", to jej w ogóle nie przesuwamy
+
                 WindowCollision(ball);
+
                 var secondBall = CollisionBalls(ball);
                 if (secondBall != null)
                 {
@@ -162,12 +159,34 @@ namespace BusinessLogic
 
             public override void StartAnimation()
             {
-                dataLayer.StartMoving();
-            }
+                if (_inAction) return;
+                _inAction = true;
 
+                foreach (var ball in GetBalls())
+                {
+                    ball.IsMoving = true; // ✨ Kulki zaczynają się ruszać
+                }
+
+                Task.Run(async () =>
+                {
+                    while (_inAction)
+                    {
+                        foreach (var ball in GetBalls())
+                        {
+                            MoveBall(ball);
+                        }
+                        await Task.Delay(20);
+                    }
+                });
+            }
             public override void StopAnimation()
             {
-                dataLayer.StopMoving();  // Assuming StopMoving exists
+                _inAction = false;
+
+                foreach (var ball in GetBalls())
+                {
+                    ball.IsMoving = false; // ❄️ Kulki się zatrzymują
+                }
             }
 
             public override List<BallAPI> GetBalls()
