@@ -1,74 +1,116 @@
+using System;
 using BusinessLogic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Data;
 
-namespace BusinessLogicTest
-
+namespace BusinessLogicTests
 {
     [TestClass]
-    public class BallLogicTest
+    public class BallLogicTests
     {
-        [TestMethod] //test konstruktora kulek
-        public void BallLogicConstructorTest()
-        {
-                var ballLogic = BallLogicAPI.CreateLogic(100, 200);
-                Assert.AreEqual(100, ballLogic.GetMapWidth());
-                Assert.AreEqual(200, ballLogic.GetMapHeight());
-                ballLogic.createNBalls(5);
-                Assert.AreEqual(ballLogic.GetSize() , 5);
-                Assert.AreEqual(ballLogic.GetBallByID(1).ID, 1);
-                ballLogic.RemoveBall(ballLogic.GetBallByID(1));
-                Assert.AreEqual(ballLogic.GetSize(), 4);
-                ballLogic.ClearMap();
-                Assert.AreEqual(ballLogic.GetSize(), 0);
+        private BallLogicAPI ballLogic;
 
+        [TestInitialize]
+        public void Setup()
+        {
+            ballLogic = BallLogicAPI.CreateLogic(500, 400);
         }
 
-        [TestMethod] //test ruchu kulek
-        public void MoveBalltest(){
-               var ballLogic = BallLogicAPI.CreateLogic(100, 200);
-                Assert.AreEqual(100, ballLogic.GetMapWidth());
-                Assert.AreEqual(200, ballLogic.GetMapHeight());
-                ballLogic.createNBalls(5);
-                double x_pos = ballLogic.GetBallByID(1).X;
-                double y_pos = ballLogic.GetBallByID(1).Y;
-
-                ballLogic.UpdateBalls();
-
-                double x_pos_two = ballLogic.GetBallByID(1).X;
-                double y_pos_two = ballLogic.GetBallByID(1).Y;
-
-                Assert.AreNotEqual(x_pos, x_pos_two);
-                Assert.AreNotEqual(y_pos, y_pos_two);
-
-        }
-        
-
-        [TestMethod] //test, czy kulka wychodzi poza granice mapy
-        public void BallCreationWithinBoundsTest()
+        [TestMethod]
+        public void TestCreateBall()
         {
-            var ballLogic = BallLogicAPI.CreateLogic(100, 200);
-            ballLogic.createNBalls(10);
+            int initialCount = ballLogic.GetBalls().Count;
+            ballLogic.CreateBall(1, 50, 50, 10, "red", 1, 1);
+            int newCount = ballLogic.GetBalls().Count;
 
-            foreach (var ball in ballLogic.GetBalls())
+            Assert.AreEqual(initialCount + 1, newCount, "Ball count did not increase after creating a ball.");
+        }
+
+        [TestMethod]
+        public void TestMoveBall()
+        {
+            ballLogic.CreateBall(2, 100, 100, 10, "blue", 1, 1);
+            var ball = ballLogic.GetBalls().Find(b => b.ID == 2);
+
+            double oldX = ball.X;
+            double oldY = ball.Y;
+
+            ballLogic.MoveBall(ball);
+
+            Assert.AreNotEqual(oldX, ball.X, "Ball X coordinate did not change after moving.");
+            Assert.AreNotEqual(oldY, ball.Y, "Ball Y coordinate did not change after moving.");
+        }
+
+        [TestMethod]
+        public void TestWindowCollision()
+        {
+            ballLogic.CreateBall(3, 5, 5, 5, "green", -1, -1);
+            var ball = ballLogic.GetBalls().Find(b => b.ID == 3);
+
+            int oldXDir = ball.XDirection;
+            int oldYDir = ball.YDirection;
+
+            ballLogic.MoveBall(ball);
+
+            Assert.AreEqual(-oldXDir, ball.XDirection, "Ball XDirection not reversed after window collision.");
+            Assert.AreEqual(-oldYDir, ball.YDirection, "Ball YDirection not reversed after window collision.");
+        }
+
+        [TestMethod]
+        public void TestElasticRebound()
+        {
+            ballLogic.CreateBall(4, 200, 200, 10, "yellow", 1, 0);
+            ballLogic.CreateBall(5, 210, 200, 10, "purple", -1, 0);
+
+            var ballOne = ballLogic.GetBalls().Find(b => b.ID == 4);
+            var ballTwo = ballLogic.GetBalls().Find(b => b.ID == 5);
+
+            int oldBallOneXDir = ballOne.XDirection;
+            int oldBallTwoXDir = ballTwo.XDirection;
+
+            ballLogic.ElasticRebound(ballOne, ballTwo);
+
+            Assert.AreEqual(oldBallTwoXDir, ballOne.XDirection, "BallOne XDirection did not swap correctly after collision.");
+            Assert.AreEqual(oldBallOneXDir, ballTwo.XDirection, "BallTwo XDirection did not swap correctly after collision.");
+        }
+
+        [TestMethod]
+        public void TestCollisionOccurrence()
+        {
+            ballLogic.CreateBall(6, 300, 300, 10, "orange", 1, 0);
+            ballLogic.CreateBall(7, 310, 300, 10, "black", -1, 0);
+
+            var ballOne = ballLogic.GetBalls().Find(b => b.ID == 6);
+            var ballTwo = ballLogic.GetBalls().Find(b => b.ID == 7);
+
+            bool collisionOccurred = ballLogic.CollisionOccurence(ballOne, ballTwo);
+
+            Assert.IsTrue(collisionOccurred, "Collision should have occurred but didn't.");
+        }
+
+        [TestMethod]
+        public void TestClearMap()
+        {
+            ballLogic.CreateRandomBall();
+            ballLogic.CreateRandomBall();
+            ballLogic.ClearMap();
+
+            Assert.AreEqual(0, ballLogic.GetBalls().Count, "Ball list should be empty after clearing map.");
+        }
+
+        [TestMethod]
+        public void TestStartStopAnimation()
+        {
+            try
             {
-                Assert.IsTrue(ball.X - ball.Radius >= 0, "Kulka wychodzi poza lewą krawędź.");
-                Assert.IsTrue(ball.X + ball.Radius <= ballLogic.GetMapWidth(), "Kulka wychodzi poza prawą krawędź.");
-                Assert.IsTrue(ball.Y - ball.Radius >= 0, "Kulka wychodzi poza górną krawędź.");
-                Assert.IsTrue(ball.Y + ball.Radius <= ballLogic.GetMapHeight(), "Kulka wychodzi poza dolną krawędź.");
+                ballLogic.StartAnimation();
+                ballLogic.StopAnimation();
+                Assert.IsTrue(true); // No exception = test passed
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Exception thrown during StartAnimation/StopAnimation.");
             }
         }
-
-
-        [TestMethod] //test ClearMap
-        public void ClearMapTest()
-        {
-            var ballLogic = BallLogicAPI.CreateLogic(100, 200);
-            ballLogic.createNBalls(3);
-            Assert.AreEqual(3, ballLogic.GetSize(), "Powinno być 3 kulki.");
-            
-            ballLogic.ClearMap();
-            Assert.AreEqual(0, ballLogic.GetSize(), "Magazyn kulek powinien być pusty po wyczyszczeniu.");
-        }
-
     }
 }

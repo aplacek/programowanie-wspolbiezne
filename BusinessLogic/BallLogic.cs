@@ -1,119 +1,57 @@
 using System;
-using System.Timers;
-using Data;
 using System.Collections.Generic;
+using System.ComponentModel;
+using Data;
 
 namespace BusinessLogic
 {
     public abstract class BallLogicAPI
     {
-        public static BallLogicAPI CreateLogic(int mapWidth, int mapHeight, BallRepositoryAPI? repo = null)
+        public static BallLogicAPI CreateLogic(int mapWidth, int mapHeight)
         {
-            return new BallLogic(mapWidth, mapHeight, repo ?? BallRepositoryAPI.CreateRepository());
+            return new BallLogic(mapWidth, mapHeight);
         }
 
         public abstract void CreateBall(int ballID, double x, double y, double radius, string color, int XDirection, int YDirection);
-        public abstract void RemoveBall(BallAPI ball);
         public abstract int GetMapWidth();
         public abstract int GetMapHeight();
-        public abstract BallAPI GetBallByID(int id);
-        public abstract List<BallAPI> GetBalls();  
+        public abstract List<BallAPI> GetBalls();
         public abstract void MoveBall(BallAPI ball);
         public abstract void UpdateBalls();
-
-        public abstract int GetSize();
-
-        public abstract void createNBalls(int amount);
-
-        public abstract void createRandomBall();
-
+        public abstract void CreateNBalls(int amount);
+        public abstract void CreateRandomBall();
         public abstract void ClearMap();
+        public abstract void Collision();
+        public abstract double Distance(BallAPI ballOne, BallAPI ballTwo);
+        public abstract void ElasticRebound(BallAPI ballOne, BallAPI ballTwo);
+        public abstract bool CollisionOccurence(BallAPI ballOne, BallAPI ballTwo);
+        public abstract BallAPI? CollisionBalls(BallAPI ballCurrent);
+        public abstract void WindowCollision(BallAPI ball);
+        public abstract void StopAnimation();
+        public abstract void StartAnimation();
 
         private class BallLogic : BallLogicAPI
         {
             private readonly int mapWidth;
             private readonly int mapHeight;
-            private readonly BallRepositoryAPI repository;
+            private readonly DataLayerAPI dataLayer;
 
-            public BallLogic(int mapWidth, int mapHeight, BallRepositoryAPI repository)
+            public BallLogic(int mapWidth, int mapHeight)
             {
-                this.repository = repository;
-                this.mapHeight = mapHeight;
                 this.mapWidth = mapWidth;
+                this.mapHeight = mapHeight;
+                this.dataLayer = DataLayerAPI.CreateData(mapWidth, mapHeight, "white"); // Default color
             }
 
             public override void CreateBall(int ballID, double x, double y, double radius, string color, int XDirection, int YDirection)
-
             {
-
-                var ball = BallAPI.createBall(repository.GetSize() + 1, x, y, radius, color, XDirection, YDirection);  
-                while (ball.X + radius > mapWidth || ball.X - radius < 0 || ball.Y + radius > mapHeight || ball.Y - radius < 0){
-                    ball = BallAPI.createBall(repository.GetSize() + 1, x, y, radius, color, XDirection, YDirection);
-                }
-                repository.AddBall(ball);
-            }
-
-            public override void RemoveBall(BallAPI ball)
-            {
-                repository.RemoveBall(ball);
-            }
-
-            public override BallAPI GetBallByID(int id)
-            {
-                return repository.GetBallByID(id);
-            }
-
-            public override List<BallAPI> GetBalls()  // Poprawiona metoda
-            {
-                return repository.GetAllBalls();
-            }
-
-            public override int GetMapWidth()
-            {
-                return mapWidth;
-            }
-
-            public override int GetMapHeight()
-            {
-                return mapHeight;
-            }
-
-            public override void MoveBall(BallAPI ball)
-            {
-                // Sprawdzenie odbicia od ścian poziomych (X)
-                if (ball.X + ball.XDirection - ball.Radius < 0 || ball.X + ball.XDirection + ball.Radius > mapWidth)
+                double weight = 50;
+                BallAPI ball = BallAPI.createBall(ballID, x, y, radius, color, XDirection, YDirection, weight);
+                while (ball.X + radius > mapWidth || ball.X - radius < 0 || ball.Y + radius > mapHeight || ball.Y - radius < 0)
                 {
-                    ball.XDirection = -ball.XDirection;  // Odbicie w poziomie
+                    ball = BallAPI.createBall(ballID, x, y, radius, color, XDirection, YDirection, weight);
                 }
-
-                // Sprawdzenie odbicia od ścian pionowych (Y)
-                if (ball.Y + ball.YDirection - ball.Radius < 0 || ball.Y + ball.YDirection + ball.Radius > mapHeight)
-                {
-                    ball.YDirection = -ball.YDirection;  // Odbicie w pionie
-                }
-
-                // Zaktualizowanie pozycji kuli
-                ball.X += ball.XDirection;
-                ball.Y += ball.YDirection;
-
-                // Ręczna kontrola, aby kula nie wyszła poza mapę
-                if (ball.X - ball.Radius < 0)
-                {
-                    ball.X = ball.Radius;  // Ustaw krawędź kuli na lewą granicę mapy
-                }
-                else if (ball.X + ball.Radius > mapWidth)
-                {
-                    ball.X = mapWidth - ball.Radius;  // Ustaw krawędź kuli na prawą granicę mapy
-                }
-
-                if (ball.Y - ball.Radius < 0)
-                {
-                    ball.Y = ball.Radius;  // Ustaw krawędź kuli na górną granicę mapy
-                }
-                else if (ball.Y + ball.Radius > mapHeight)
-                {
-                    ball.Y = mapHeight - ball.Radius;  // Ustaw krawędź kuli na dolną granicę mapy
-                }
+                dataLayer.AddBall(ball);
             }
 
             public override void UpdateBalls()
@@ -124,59 +62,123 @@ namespace BusinessLogic
                 }
             }
 
-            public override void createNBalls(int amount){
-
-                for(int i = 0; i< amount; i++){
-                    createRandomBall();
+            public override void CreateNBalls(int amount)
+            {
+                for (int i = 0; i < amount; i++)
+                {
+                    CreateRandomBall();
                 }
-
             }
 
-           public override void createRandomBall()
-                {
+            public override void CreateRandomBall()
+            {      
                 double radius = 12;
                 Random random = new Random();
-
-                int xRandom = 0;
-                int yRandom = 0;
-                
-                if (random.Next(2) == 0)
-                    {
-                    xRandom = -1;
-                    }
-                else
-                    {
-                    xRandom = 1;
-                    }
-
-                if (random.Next(2) == 0)
-                    {
-                    yRandom = -1;
-                    }
-                else
-                    {
-                    yRandom = 1;
-                    }
-
+                int xDirection = random.Next(2) == 0 ? -1 : 1;
+                int yDirection = random.Next(2) == 0 ? -1 : 1;
                 double x = random.Next((int)radius, mapWidth - (int)radius);
                 double y = random.Next((int)radius, mapHeight - (int)radius);
+                string color = "#" + random.Next(0x1000000).ToString("X6");
 
-                string color = "#" + random.Next(0x1000000).ToString("X6"); 
+                CreateBall(dataLayer.GetBalls().Count + 1, x, y, radius, color, xDirection, yDirection);
+            }
 
-                this.CreateBall(repository.GetSize() + 1, x, y, radius, color, xRandom, yRandom);
-                }
+            public override void ClearMap()
+            {
+                dataLayer.RemoveBalls();
+            }
 
-                public override int GetSize(){
-                    return this.repository.GetSize();
-                }
-
-                public override void ClearMap()
+            public override void Collision()
+            {
+                foreach (var ball in GetBalls())
                 {
-                this.repository.ClearStorage();
-                }
-                
+                    var other = CollisionBalls(ball);
+                    if (other != null)
+                    {
+                        ElasticRebound(ball, other);
+                    }
                 }
             }
+
+            public override double Distance(BallAPI ballOne, BallAPI ballTwo)
+            {
+                return Math.Sqrt(Math.Pow(ballOne.X - ballTwo.X, 2) + Math.Pow(ballOne.Y - ballTwo.Y, 2));
+            }
+
+            public override bool CollisionOccurence(BallAPI ballOne, BallAPI ballTwo)
+            {
+                double distanceBalls = Distance(ballOne, ballTwo);
+                double radiusSum = ballOne.Radius + ballTwo.Radius;
+                return distanceBalls <= radiusSum;
+            }
+
+            public override BallAPI? CollisionBalls(BallAPI ballCurrent)
+            {
+                foreach (var ball in GetBalls())
+                {
+                    if (!ball.Equals(ballCurrent) && CollisionOccurence(ballCurrent, ball))
+                        return ball;
+                }
+                return null;
+            }
+
+            public override void WindowCollision(BallAPI ball)
+            {
+                if (ball.X + ball.XDirection - ball.Radius < 0 || ball.X + ball.XDirection + ball.Radius > mapWidth)
+                {
+                    ball.XDirection = -ball.XDirection;
+                }
+
+                if (ball.Y + ball.YDirection - ball.Radius < 0 || ball.Y + ball.YDirection + ball.Radius > mapHeight)
+                {
+                    ball.YDirection = -ball.YDirection;
+                }
+            }
+
+            public override void MoveBall(BallAPI ball)
+            {
+                WindowCollision(ball);
+                var secondBall = CollisionBalls(ball);
+                if (secondBall != null)
+                {
+                    ElasticRebound(ball, secondBall);
+                }
+
+                ball.X += ball.XDirection;
+                ball.Y += ball.YDirection;
+            }
+
+            public override void ElasticRebound(BallAPI ballOne, BallAPI ballTwo)
+            {
+                int tempX = ballOne.XDirection;
+                int tempY = ballOne.YDirection;
+
+                ballOne.XDirection = ballTwo.XDirection;
+                ballOne.YDirection = ballTwo.YDirection;
+
+                ballTwo.XDirection = tempX;
+                ballTwo.YDirection = tempY;
+            }
+
+            public override void StartAnimation()
+            {
+                dataLayer.StartMoving();
+            }
+
+            public override void StopAnimation()
+            {
+                dataLayer.StopMoving();  // Assuming StopMoving exists
+            }
+
+            public override List<BallAPI> GetBalls()
+            {
+                return dataLayer.GetBalls();
+            }
+
+            public override int GetMapWidth() => mapWidth;
+
+            public override int GetMapHeight() => mapHeight;
+
+        }
     }
-
-
+}
