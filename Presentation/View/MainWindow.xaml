@@ -12,7 +12,7 @@
 
     <Viewbox Stretch="Uniform">
     <Grid>
-        <ItemsControl ItemsSource="{Binding GetBalls}" 
+        <ItemsControl ItemsSource="{Binding Balls}" 
                       Margin="20,0,280,0"
                       Width="{Binding Width}" 
                       Height="{Binding Height}" 

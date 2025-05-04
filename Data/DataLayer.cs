@@ -27,57 +27,63 @@ namespace Data
             private bool _moving = false;
             private object _lock = new object();
             private BoardAPI board;
+            private object _barrier = new object();
+             private int _counter = 0;
+             private int _countOfBalls = 0;
+             private double height;
+             private double width;
 
             public DataLayer(int height, int width, string colour)
             {
                 this.board = BoardAPI.CreateBoard(height, width, colour); 
+                this.height = height;
+                this.width = width;
                 this._threads = new();
+                
         
             }
 
-            public override void AddBall(BallAPI ball)
+           public override void AddBall(BallAPI ball)
             {
-          
-           
-                board.AddBall(ball);
-
-                Thread t = new Thread(() =>
+                lock (_lock)
                 {
-                    while (_moving)
-                    {
-                        lock (_lock)
-                        {
-                            ball.MoveBall();
-                        }
-                        Thread.Sleep(10); //in order not to overheeat cpu :P
-                    }
-                });
-
-                _threads.Add(t); 
+                    board.AddBall(ball);
+                }
             }
 
         public override void StartMoving()
         {
-            if (_moving) return;
-            _moving = true;
 
-            Task.Run(async () =>
+            _moving = true;
+            foreach (var ball in board.GetBalls())
+                {
+            Thread t = new Thread(() =>
             {
                 while (_moving)
                 {
-                    foreach (var ball in board.GetBalls()) 
+                 
+                    lock (_lock)
                     {
-                        ball.X += ball.XDirection;
-                        ball.Y += ball.YDirection;
+                        ball.MoveBall(width, height);
                     }
-                    await Task.Delay(20); 
+                    Thread.Sleep(10); 
                 }
-            });
+            })
+            {
+                IsBackground = true
+            };
+            _threads.Add(t);
+            t.Start();
+        }
         }
 
             public override void StopMoving()
             {
                 _moving = false;
+                  foreach (var thread in _threads)
+                {
+                    thread.Join();
+                }
             }
 
             public override List<BallAPI> GetBalls()

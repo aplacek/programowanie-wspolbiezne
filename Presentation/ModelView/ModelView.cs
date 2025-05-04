@@ -3,11 +3,13 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Presentation.Model;
 using Presentation.ModelView.MVVMCore;
+using System.ComponentModel;  
+using System.Runtime.CompilerServices; 
 using Data;
 
 namespace Presentation.ModelView
 {
-    public class ModelView : BaseViewModel
+    public class ModelView : BaseViewModel, INotifyPropertyChanged
     {
         private MainAPI modelLayer;
 
@@ -24,6 +26,7 @@ namespace Presentation.ModelView
 
         public ModelView()
         {
+        
             this.modelLayer = MainAPI.CreateMap(_width, _height);
             SummonCommand = new RelayCommand(SummonBalls, () => !_clearFlag);
             ClearCommand = new RelayCommand(ClearBalls, () => _clearFlag);
@@ -31,14 +34,18 @@ namespace Presentation.ModelView
             StopCommand = new RelayCommand(StopBalls, () => _pauseFlag);
         }
 
-        public ObservableCollection<BallAPI> Balls { get; set; }
+        public ObservableCollection<CircleAPI> Balls { 
+            get => this.modelLayer.Balls;
+            set => this.modelLayer.Balls = value;
+
+        }
 
         public RelayCommand SummonCommand { get; }
         public RelayCommand ClearCommand { get; }
         public RelayCommand StartCommand { get; }
         public RelayCommand StopCommand { get; }
 
-   
+        
         public string Amount
         {
             get => _amount;
@@ -48,6 +55,7 @@ namespace Presentation.ModelView
                 RaisePropertyChanged();
             }
         }
+        
 
 
         private void SummonBalls()
@@ -62,7 +70,8 @@ namespace Presentation.ModelView
                     throw new ArgumentException("Not a positive integer");
                 _clearFlag = true;
                 modelLayer.CreateBalls(ballsNum);
-                
+                SummonCommand.RaiseCanExecuteChanged();
+                ClearCommand.RaiseCanExecuteChanged();
             }
             catch (Exception)
             {
@@ -73,6 +82,7 @@ namespace Presentation.ModelView
 
         private void StartBalls()
         {
+            Console.WriteLine("tutaj");
    
             _pauseFlag = true;
             //_resumeFlag = false;

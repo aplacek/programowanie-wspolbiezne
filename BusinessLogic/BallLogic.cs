@@ -61,6 +61,7 @@ namespace BusinessLogic
                 {
                     CreateRandomBall();
                 }
+             
             }
 
             public override void CreateRandomBall()
@@ -115,32 +116,49 @@ namespace BusinessLogic
                 return null;
             }
 
-            public override void WindowCollision(BallAPI ball)
+           public override void WindowCollision(BallAPI ball)
+        {
+            if (ball.X - ball.Radius <= 0 || ball.X + ball.Radius >= mapWidth)
             {
-                if (ball.X + ball.XDirection - ball.Radius < 0 || ball.X + ball.XDirection + ball.Radius > mapWidth)
-                {
-                    ball.XDirection = -ball.XDirection;
-                }
-
-                if (ball.Y + ball.YDirection - ball.Radius < 0 || ball.Y + ball.YDirection + ball.Radius > mapHeight)
-                {
-                    ball.YDirection = -ball.YDirection;
-                }
+                ball.XDirection = -ball.XDirection;
+                ball.X = Math.Clamp(ball.X, ball.Radius, mapWidth - ball.Radius);
             }
+
+            if (ball.Y - ball.Radius <= 0 || ball.Y + ball.Radius >= mapHeight)
+            {
+                ball.YDirection = -ball.YDirection;
+                ball.Y = Math.Clamp(ball.Y, ball.Radius, mapHeight - ball.Radius);
+            }
+        }
+
+           public void isMoving(object sender, PropertyChangedEventArgs e)
+        {
+            BallAPI ball = (BallAPI)sender;
+            if (e.PropertyName == nameof(BallAPI.XPosition) || e.PropertyName == nameof(BallAPI.YPosition))
+            {
+  
+                MoveBall(ball);
+                ball.IsMoving = false;
+            }
+        }
 
             public override void MoveBall(BallAPI ball)
             {
+                // Ball movement is only executed if the ball is marked as moving
                 if (!ball.IsMoving)
-                    return; // 👉 Jeśli kulka nie "rusza się", to jej w ogóle nie przesuwamy
+                    return;
 
+                // Check for boundary collisions with walls
                 WindowCollision(ball);
 
+                // Check for collisions with other balls
                 var secondBall = CollisionBalls(ball);
                 if (secondBall != null)
                 {
-                    ElasticRebound(ball, secondBall);
+                    ElasticRebound(ball, secondBall); // Reverse directions if collision happens
                 }
 
+                // Move the ball based on its direction
                 ball.X += ball.XDirection;
                 ball.Y += ball.YDirection;
             }
@@ -159,34 +177,24 @@ namespace BusinessLogic
 
             public override void StartAnimation()
             {
-                if (_inAction) return;
+                dataLayer.StartMoving();
+            }
+
+           public override void StartAnimation()
+            {
                 _inAction = true;
-
-                foreach (var ball in GetBalls())
-                {
-                    ball.IsMoving = true; // ✨ Kulki zaczynają się ruszać
-                }
-
-                Task.Run(async () =>
+                Task.Run(() =>
                 {
                     while (_inAction)
                     {
                         foreach (var ball in GetBalls())
                         {
+                            ball.IsMoving = true;
                             MoveBall(ball);
                         }
-                        await Task.Delay(20);
+                        Thread.Sleep(16); // ~60 FPS
                     }
                 });
-            }
-            public override void StopAnimation()
-            {
-                _inAction = false;
-
-                foreach (var ball in GetBalls())
-                {
-                    ball.IsMoving = false; // ❄️ Kulki się zatrzymują
-                }
             }
 
             public override List<BallAPI> GetBalls()

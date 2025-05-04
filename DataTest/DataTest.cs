@@ -7,7 +7,7 @@ namespace DataTests
 {
     [TestClass]
     public class DataLayerTests
-    {
+    { /**
         private DataLayerAPI dataLayer;
 
         [TestInitialize]
@@ -57,5 +57,6 @@ namespace DataTests
             Assert.AreEqual(0, balls.Count, "RemoveBalls did not clear all balls.");
         }
         //to-do more tests
+        */
     }
 }

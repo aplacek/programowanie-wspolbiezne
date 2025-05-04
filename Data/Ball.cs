@@ -19,22 +19,23 @@ public abstract class BallAPI{
     private bool _moving = true;
 
     public double weight { get; set; }
-    public double Xspeed { get; set; }
-    public double Yspeed { get; set; }
+    public abstract double XSpeed { get; set; }
+    public abstract double YSpeed { get; set; }
 
     public abstract double XPosition { get; set; }
     public abstract double YPosition { get; set; }
-    public abstract double SpeedX { get; set; }
-    public abstract double SpeedY { get; set; }
 
     public abstract bool IsMoving { get; set; }
 
-    public abstract void MoveBall();
+    public abstract void MoveBall(double mapWidth, double mapHeight);
 
     public abstract event PropertyChangedEventHandler PropertyChanged;
 
     private class Ball : BallAPI, INotifyPropertyChanged
     {
+        private double _xSpeed;
+        private double _ySpeed ;
+        private readonly object _syncObject = new object();
         public Ball(int ID, double X, double Y, double radius, string color, int XDirection, int YDirection, double weight)
         {
             this.ID = ID;
@@ -45,15 +46,19 @@ public abstract class BallAPI{
             this.XDirection = XDirection;
             this.weight = weight;
             this.YDirection = YDirection;
-            
+            this._xSpeed = 1;
+            this._ySpeed = 1; 
         }
-                public override double XPosition
+            public override double XPosition
         {
             get => X;
             set
             {
-                X = value;
-                OnPropertyChanged(nameof(XPosition));
+                if (X != value)
+                {
+                    X = value;
+                    OnPropertyChanged(nameof(XPosition));
+                }
             }
         }
 
@@ -62,41 +67,53 @@ public abstract class BallAPI{
             get => Y;
             set
             {
-                Y = value;
-                OnPropertyChanged(nameof(YPosition));
-            }
-        }
-
-              public override double SpeedX
-        {
-            get =>  Xspeed;
-            set
-            {
-                Xspeed = value;
-                OnPropertyChanged(nameof(SpeedX));
-            }
-        }
-              public override double SpeedY
-        {
-            get =>  Yspeed;
-            set
-            {
-                Yspeed = value;
-                OnPropertyChanged(nameof(SpeedY));
-            }
-        }
-
-        public override void MoveBall()
-        {
-       
-            lock (this)
+                if (Y != value)
                 {
-                    X += Xspeed;
-                    Y += Yspeed;
+                    Y = value;
+                    OnPropertyChanged(nameof(YPosition));
                 }
-
-                
+            }
         }
+
+
+
+        public override double XSpeed
+        {
+            get => _xSpeed;
+            set
+            {
+                _xSpeed = value;
+                OnPropertyChanged(nameof(XSpeed));
+            }
+        }
+
+        public override double YSpeed
+        {
+            get => _ySpeed;
+            set
+            {
+                _ySpeed = value;
+                OnPropertyChanged(nameof(YSpeed));
+            }
+        }
+
+
+         public override void MoveBall(double mapWidth, double mapHeight)
+            {
+                lock (_syncObject)
+                {
+                    // Boundary check for window edges
+                    if (XPosition + XSpeed * XDirection < 0 || XPosition + XSpeed * XDirection > mapWidth)
+                        XDirection = -XDirection;  // Reverse direction
+
+                    if (YPosition + YSpeed * YDirection < 0 || YPosition + YSpeed * YDirection > mapHeight)
+                        YDirection = -YDirection;  // Reverse direction
+
+                    // Update ball position
+                    XPosition += XSpeed * XDirection;
+                    YPosition += YSpeed * YDirection;
+                }
+            }
 
         public override bool IsMoving
         {
@@ -107,6 +124,7 @@ public abstract class BallAPI{
 
             }
         }
+
         public override event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
