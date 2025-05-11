@@ -20,7 +20,7 @@
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas>
+                    <Canvas  Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}">
                         <Canvas.Background>
                             <RadialGradientBrush>
                                 <GradientStop Color="#E6A4B4" Offset="1"/>
@@ -51,19 +51,18 @@
         </ItemsControl>
 
 <StackPanel Orientation="Vertical"
-            HorizontalAlignment="Left"
+            HorizontalAlignment="Right"
             VerticalAlignment="Top"
             Margin="800,200,0,0"
-            Width="100"
+            Width="200"
             Height="Auto"
-            Background="Transparent"
-            >
+            Background="Transparent">
 
     <TextBlock Text="Amount" 
                FontSize="24" 
                FontFamily="Segoe UI" 
                Foreground="Black"
-               Margin="5,0,0,5"/>
+               Margin="20,0,0,20"/>
 
     <TextBox Name="AmountTextBox"
              Width="92" Height="28"
@@ -71,7 +70,7 @@
              FontFamily="Segoe UI"
              Background="White"
              Text="{Binding Amount}"
-             Margin="0,0,0,20"/>
+             Margin="0,0,75,20"/>
 
     <Button Content="Summon"
             Width="92" Height="28"
@@ -79,7 +78,7 @@
             FontFamily="Segoe UI"
             Background="White"
             Command="{Binding SummonCommand}"
-            Margin="0,0,0,20"/>
+            Margin="0,0,75,20"/>
 
     <Button Content="Clear"
             Width="92" Height="28"
@@ -87,7 +86,7 @@
             FontFamily="Segoe UI"
             Background="White"
             Command="{Binding ClearCommand}"
-            Margin="0,0,0,20"/>
+            Margin="0,0,75,20"/>
 
     <Button Content="Resume"
             Width="92" Height="28"
@@ -95,13 +94,14 @@
             FontFamily="Segoe UI"
             Background="White"
             Command="{Binding StartCommand}"
-            Margin="0,0,0,20"/>
+            Margin="0,0,75,20"/>
 
     <Button Content="Stop"
             Width="92" Height="28"
             FontSize="16"
             FontFamily="Segoe UI"
             Background="White"
+            Margin="0,0,75,20"
             Command="{Binding StopCommand}" />
 </StackPanel>
     </Grid>

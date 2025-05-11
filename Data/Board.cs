@@ -6,13 +6,13 @@ using System.ComponentModel;
 
     public abstract class BoardAPI
     {
-        public static BoardAPI CreateBoard(int height, int width, string color)
+        public static BoardAPI CreateBoard(double height, double width, string color)
         {
             return new Board(height, width, color);
         }
 
-        public abstract int Width { get; }
-        public abstract int Height { get; }
+        public abstract double Width { get; }
+        public abstract double Height { get; }
         public abstract string Color { get; }
         public abstract event PropertyChangedEventHandler PropertyChanged;
 
@@ -23,12 +23,12 @@ using System.ComponentModel;
 
     public class Board : BoardAPI, INotifyPropertyChanged
     {
-        private int height;
-        private int width;
+        private double height;
+        private double width;
         private string color;
         private List<BallAPI> balls;
 
-        public Board(int height, int width, string color)
+        public Board(double height, double width, string color)
         {
             this.height = height;
             this.width = width;
@@ -41,8 +41,8 @@ using System.ComponentModel;
             balls.Add(ball);
         }
 
-        public override int Height => height;
-        public override int Width => width;
+        public override double Height => height;
+        public override double  Width => width;
         public override string Color => color;
 
         public override List<BallAPI> GetBalls()

@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Threading;
 
 namespace DataTests
+
 {
     [TestClass]
     public class DataLayerTests
-    { /**
+    { 
         private DataLayerAPI dataLayer;
 
         [TestInitialize]
@@ -26,7 +27,7 @@ namespace DataTests
 
             int newCount = dataLayer.GetBalls().Count;
 
-            Assert.AreEqual(initialCount + 1, newCount, "Ball was not added correctly.");
+            Assert.AreEqual(initialCount + 1, newCount);
         }
 
         [TestMethod]
@@ -40,7 +41,7 @@ namespace DataTests
 
             List<BallAPI> balls = dataLayer.GetBalls();
 
-            Assert.AreEqual(2, balls.Count, "GetBalls did not return correct number of balls.");
+            Assert.AreEqual(2, balls.Count);
             Assert.IsTrue(balls.Exists(b => b.ID == 2), "Ball with ID 2 not found.");
             Assert.IsTrue(balls.Exists(b => b.ID == 3), "Ball with ID 3 not found.");
         }
@@ -54,9 +55,8 @@ namespace DataTests
             dataLayer.RemoveBalls();
 
             List<BallAPI> balls = dataLayer.GetBalls();
-            Assert.AreEqual(0, balls.Count, "RemoveBalls did not clear all balls.");
+            Assert.AreEqual(0, balls.Count);
         }
-        //to-do more tests
-        */
+
     }
 }

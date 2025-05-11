@@ -6,6 +6,7 @@ using Presentation.ModelView.MVVMCore;
 using System.ComponentModel;  
 using System.Runtime.CompilerServices; 
 using Data;
+using System.Windows;
 
 namespace Presentation.ModelView
 {
@@ -14,9 +15,10 @@ namespace Presentation.ModelView
         private MainAPI modelLayer;
 
         private string _amount = "";
-
-        public int _width = 700;
-        public int _height = 500;
+        public double _width;
+        public double _height;
+        private double _canvasHeight = 500;
+        private double _canvasWidth = 800;
 
         private bool _pauseFlag = false;
         //private bool _resumeFlag = false;
@@ -26,8 +28,11 @@ namespace Presentation.ModelView
 
         public ModelView()
         {
-        
-            this.modelLayer = MainAPI.CreateMap(_width, _height);
+       
+            _width = _canvasWidth;
+            _height = _canvasHeight;
+            this.modelLayer = MainAPI.CreateMap(_width, _height); 
+
             SummonCommand = new RelayCommand(SummonBalls, () => !_clearFlag);
             ClearCommand = new RelayCommand(ClearBalls, () => _clearFlag);
             StartCommand = new RelayCommand(StartBalls, () => !_pauseFlag);
@@ -45,7 +50,26 @@ namespace Presentation.ModelView
         public RelayCommand StartCommand { get; }
         public RelayCommand StopCommand { get; }
 
-        
+        public double CanvasWidth
+        {
+            get => _canvasWidth;
+            set {
+                _canvasWidth = value;
+                RaisePropertyChanged();
+            }
+
+        }
+
+             public double CanvasHeight
+        {
+            get => _canvasHeight;
+            set {
+                _canvasHeight = value;
+                RaisePropertyChanged();
+            }
+            
+        }
+
         public string Amount
         {
             get => _amount;
@@ -95,13 +119,14 @@ namespace Presentation.ModelView
 
         private void StopBalls()
         {
-        
-            _pauseFlag = false;
             //_resumeFlag = true;
+            _pauseFlag = false;
 
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();
+
             modelLayer.StopMovement();
+           
         }
 
 
@@ -119,7 +144,7 @@ namespace Presentation.ModelView
             RaisePropertyChanged(nameof(Amount));
             StartCommand.RaiseCanExecuteChanged();
             StopCommand.RaiseCanExecuteChanged();
-              
         }
+
     }
 }

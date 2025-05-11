@@ -9,7 +9,7 @@ namespace Presentation.Model
     {
         
 
-        public static MainAPI CreateMap(int width, int height)
+        public static MainAPI CreateMap(double width, double height)
         {
             return new Main(width, height);
         }
@@ -28,15 +28,15 @@ namespace Presentation.Model
 
         private class Main : MainAPI
         {
-            private int width;
-            private int height;
+            private double width;
+            private double height;
 
 
             private readonly BallLogicAPI ballLogic;
 
             
 
-            public Main(int width, int height)
+            public Main(double width, double height)
             {
                 this.width = width;
                 this.height = height;

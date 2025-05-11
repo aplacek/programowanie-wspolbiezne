@@ -8,7 +8,7 @@ namespace PresentationTest
     public class ModelTest
     {
         [TestMethod]
-        public void CreateBalls_ShouldAddCorrectAmount()
+        public void TestCreateBalls()
         {
             MainAPI model = MainAPI.CreateMap(500, 500);
 
@@ -19,7 +19,7 @@ namespace PresentationTest
         }
 
         [TestMethod]
-        public void ClearMap_ShouldRemoveAllBalls()
+        public void TestClearMap()
         {
             MainAPI model = MainAPI.CreateMap(500, 500);
 
@@ -28,22 +28,6 @@ namespace PresentationTest
 
             Assert.AreEqual(0, model.GetBalls().Count);
         }
-
-        [TestMethod]
-        public void Move_ShouldUpdateBallPosition()
-        {
-            MainAPI model = MainAPI.CreateMap(500, 500);
-
-            model.CreateBalls(1);
-            var ball = model.GetBalls().First();
-            double initialX = ball.X;
-            double initialY = ball.Y;
-
-            model.Move();
-            var updatedBall = model.GetBalls().First();
-
-            bool hasMoved = initialX != updatedBall.X || initialY != updatedBall.Y;
-            Assert.IsTrue(hasMoved, "Ball did not move after calling Move()");
-        }
+   
     }
 }

@@ -1,62 +1,98 @@
-using Presentation.ModelView;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Presentation.ModelView;
+using System.Linq;
 
-namespace PresentationTest
+namespace PresentationTests
 {
     [TestClass]
-    public class ModelViewTest
+    public class ModelViewTests
     {
-        [TestMethod]
-        public void ModelView_InitializationTest()
+        private ModelView viewModel;
+
+        [TestInitialize]
+        public void Setup()
         {
-            var modelView = new ModelView();
-
-            Assert.IsNotNull(modelView.Balls);
-            Assert.AreEqual(0, modelView.Balls.Count);
-            Assert.AreEqual(700, modelView._width); 
-            Assert.AreEqual(500, modelView._height); 
-        }
-
-
-        [TestMethod]
-        public void SummonBallsTest_ValidInput()
-        {
-            var modelView = new ModelView();
-            modelView.Amount = "5";
-
-            modelView.SummonCommand.Execute(null);
-
-            Assert.AreEqual(5, modelView.Balls.Count);
+            viewModel = new ModelView();
         }
 
         [TestMethod]
-        public void SummonBallsTest_InvalidInput()
+        public void InitialState_ShouldBeCorrect()
         {
-            var modelView = new ModelView();
-            modelView.Amount = "-1"; //niepoprawna wartosc
-
-            modelView.SummonCommand.Execute(null);
-
-            Assert.AreEqual("", modelView.Amount);
-            Assert.AreEqual(0, modelView.Balls.Count); 
+            Assert.AreEqual(800, viewModel.CanvasWidth);
+            Assert.AreEqual(500, viewModel.CanvasHeight);
+            Assert.AreEqual("", viewModel.Amount);
+            Assert.IsFalse(viewModel.ClearCommand.CanExecute(null));
+            Assert.IsTrue(viewModel.SummonCommand.CanExecute(null));
         }
-
 
         [TestMethod]
-        public void ClearBallsTest()
+        public void SummonBalls_ShouldAddCorrectNumberOfBalls()
         {
-            var modelView = new ModelView();
-            
-            modelView.Amount = "5";
-            modelView.SummonCommand.Execute(null);
+            viewModel.Amount = "3";
+            viewModel.SummonCommand.Execute(null);
 
-            Assert.AreEqual(5, modelView.Balls.Count);
-
-            modelView.ClearCommand.Execute(null);
-
-            Assert.AreEqual(0, modelView.Balls.Count);
-            Assert.AreEqual("", modelView.Amount); 
+            Assert.AreEqual(3, viewModel.Balls.Count);
+            Assert.IsTrue(viewModel.ClearCommand.CanExecute(null));
         }
 
+        [TestMethod]
+        public void SummonBalls_InvalidInput_ShouldClearAmount()
+        {
+            viewModel.Amount = "abc";
+            viewModel.SummonCommand.Execute(null);
+
+            Assert.AreEqual("", viewModel.Amount);
+        }
+
+        [TestMethod]
+        public void StartBalls_ShouldEnableStopAndPauseMovement()
+        {
+            viewModel.Amount = "2";
+            viewModel.SummonCommand.Execute(null);
+            viewModel.StartCommand.Execute(null);
+
+            Assert.IsTrue(viewModel.StopCommand.CanExecute(null));
+            Assert.IsFalse(viewModel.StartCommand.CanExecute(null));
+        }
+
+        [TestMethod]
+        public void StopBalls_ShouldDisableStopEnableStart()
+        {
+            viewModel.Amount = "2";
+            viewModel.SummonCommand.Execute(null);
+            viewModel.StartCommand.Execute(null);
+            viewModel.StopCommand.Execute(null);
+
+            Assert.IsTrue(viewModel.StartCommand.CanExecute(null));
+            Assert.IsFalse(viewModel.StopCommand.CanExecute(null));
+        }
+
+        [TestMethod]
+        public void ClearBalls_ShouldResetAll()
+        {
+            viewModel.Amount = "4";
+            viewModel.SummonCommand.Execute(null);
+
+            viewModel.ClearCommand.Execute(null);
+
+            Assert.AreEqual(0, viewModel.Balls.Count);
+            Assert.AreEqual("", viewModel.Amount);
+            Assert.IsFalse(viewModel.ClearCommand.CanExecute(null));
+        }
+
+        [TestMethod]
+        public void SettingCanvasProperties_ShouldRaiseChange()
+        {
+            bool changed = false;
+            viewModel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == "CanvasWidth") changed = true;
+            };
+
+            viewModel.CanvasWidth = 600;
+
+            Assert.IsTrue(changed);
+            Assert.AreEqual(600, viewModel.CanvasWidth);
+        }
     }
 }

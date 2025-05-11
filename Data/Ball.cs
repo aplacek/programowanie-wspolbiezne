@@ -97,19 +97,19 @@ public abstract class BallAPI{
             }
         }
 
-
+        ///
+        /// Critical section
+        /// without locking multiple threads could simultaneously change the ball's position
          public override void MoveBall(double mapWidth, double mapHeight)
             {
                 lock (_syncObject)
                 {
-                    // Boundary check for window edges
                     if (XPosition + XSpeed * XDirection < 0 || XPosition + XSpeed * XDirection > mapWidth)
-                        XDirection = -XDirection;  // Reverse direction
+                        XDirection = -XDirection; 
 
                     if (YPosition + YSpeed * YDirection < 0 || YPosition + YSpeed * YDirection > mapHeight)
-                        YDirection = -YDirection;  // Reverse direction
+                        YDirection = -YDirection;  
 
-                    // Update ball position
                     XPosition += XSpeed * XDirection;
                     YPosition += YSpeed * YDirection;
                 }

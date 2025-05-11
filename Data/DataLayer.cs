@@ -9,7 +9,7 @@ namespace Data
 {
     public abstract class DataLayerAPI
     {
-        public static DataLayerAPI CreateData(int height, int width, string colour)
+        public static DataLayerAPI CreateData(double height, double width, string colour)
         {
             return new DataLayer(height, width, colour);
         }
@@ -33,7 +33,7 @@ namespace Data
              private double height;
              private double width;
 
-            public DataLayer(int height, int width, string colour)
+            public DataLayer(double height, double width, string colour)
             {
                 this.board = BoardAPI.CreateBoard(height, width, colour); 
                 this.height = height;
