@@ -141,6 +141,9 @@ namespace BusinessLogic
                 ball.IsMoving = false;
             }
         }
+        public override void StopAnimation(){
+            _inAction = false;
+        }
 
             public override void MoveBall(BallAPI ball)
             {
@@ -173,11 +176,6 @@ namespace BusinessLogic
 
                 ballTwo.XDirection = tempX;
                 ballTwo.YDirection = tempY;
-            }
-
-            public override void StartAnimation()
-            {
-                dataLayer.StartMoving();
             }
 
            public override void StartAnimation()
