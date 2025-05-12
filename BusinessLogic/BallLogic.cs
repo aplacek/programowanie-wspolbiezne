@@ -116,6 +116,7 @@ namespace BusinessLogic
             /// 
             public override void ClearMap()
             {
+                StopAnimation();
                 dataLayer.RemoveBalls();
             }
             ///
