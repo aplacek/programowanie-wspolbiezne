@@ -48,30 +48,43 @@ namespace BusinessLogic
             /// Creating a ball - radius and weight values are random
             /// 
             public override void CreateBall(int ballID, double x, double y, double radius, string color, int XDirection, int YDirection)
+{
+            Random random = new Random();
+            double weight = (double)random.Next(1, 10);
+            radius = weight + 10;
+
+            int maxAttempts = 100;
+            bool placed = false;
+
+            for (int i = 0; i < maxAttempts && !placed; i++)
             {
-                
-                Random random = new Random();
-                double weight =  (double) random.Next(1, 10);
-                
-                radius = weight + 10;
-                
+                x = random.Next((int)radius, (int)(mapWidth - radius));
+                y = random.Next((int)radius, (int)(mapHeight - radius));
+
                 BallAPI ball = BallAPI.createBall(ballID, x, y, radius, color, XDirection, YDirection, weight);
-                bool check = true;
-                while (ball.X + radius > mapWidth || ball.X - radius < 0 || ball.Y + radius > mapHeight || ball.Y - radius < 0 && check == true)
+                placed = true;
+
+                foreach (var other in GetBalls())
                 {
-                  
-                    foreach( var ballTwo in GetBalls()){
-                        if(CollisionOccurence(ball, ballTwo)){
-                            ball = BallAPI.createBall(ballID, x, y, radius, color, XDirection, YDirection, weight);
-                        }else{
-                            check = false;
-                        }
+                    if (CollisionOccurence(ball, other))
+                    {
+                        placed = false;
+                        break;
                     }
-                 
                 }
-                dataLayer.AddBall(ball);
+
+                if (placed)
+                {
+                    dataLayer.AddBall(ball);
+                    return;
+                }
             }
 
+            if (!placed)
+            {
+                throw new Exception("Nie udało się umieścić kulki bez kolizji po 100 próbach.");
+            }
+        }
             ///
             /// Creating N amount of balls
             /// 
