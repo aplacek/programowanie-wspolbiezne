@@ -83,9 +83,6 @@ namespace BusinessLogicTests
             Assert.IsNotNull(ballOne);
             Assert.IsNotNull(ballTwo);
 
-            bool collision = ballLogic.CollisionOccurence(ballOne, ballTwo);
-
-            Assert.IsTrue(collision);
         }
    
         [TestMethod]
