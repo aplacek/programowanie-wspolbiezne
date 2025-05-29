@@ -6,6 +6,7 @@ namespace Data
 {
     public class DataLogger
     {
+        //blockingcollection prevents buffer overflow and prevents reading from an empty buffer
         private readonly BlockingCollection<Dictionary<string, object>> logQueue = new();
         private readonly string pathToSave;
         private readonly Thread loggingThread;
@@ -80,7 +81,7 @@ namespace Data
                     Thread.Sleep(500);
                     logQueue.Add(log); 
                 }
-                
+
             }
         }
     }

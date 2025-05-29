@@ -18,6 +18,8 @@ public abstract class BallAPI{
     public int YDirection { get; set; }
     private bool _moving = true;
 
+    private DateTime lastUpdateTime = DateTime.Now;
+
     public double weight { get; set; }
     public abstract double XSpeed { get; set; }
     public abstract double YSpeed { get; set; }
@@ -48,6 +50,7 @@ public abstract class BallAPI{
             this.YDirection = YDirection;
             this._xSpeed = 1;
             this._ySpeed = 1; 
+         
         }
             public override double XPosition
         {
@@ -104,14 +107,25 @@ public abstract class BallAPI{
             {
                 lock (_syncObject)
                 {
-                    if (XPosition + XSpeed * XDirection < 0 || XPosition + XSpeed * XDirection > mapWidth)
-                        XDirection = -XDirection; 
+                    DateTime now = DateTime.Now;
+                    double timeDifference = (now - lastUpdateTime).TotalSeconds; 
+                    lastUpdateTime = now;
 
-                    if (YPosition + YSpeed * YDirection < 0 || YPosition + YSpeed * YDirection > mapHeight)
-                        YDirection = -YDirection;  
+                    double newX = XPosition + XSpeed * XDirection * timeDifference;
+                    double newY = YPosition + YSpeed * YDirection * timeDifference;
 
-                    XPosition += XSpeed * XDirection;
-                    YPosition += YSpeed * YDirection;
+                    if (newX < 0 || newX > mapWidth){
+                        XDirection = -XDirection;
+                        newX = XPosition + XSpeed * XDirection * timeDifference;
+                    }
+
+                    if (newY < 0 || newY > mapHeight){
+                        YDirection = -YDirection;
+                        newY = YPosition + YSpeed * YDirection * timeDifference;
+                    }
+
+                    XPosition = newX;
+                    YPosition = newY;
                 }
             }
 
