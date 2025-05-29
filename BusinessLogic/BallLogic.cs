@@ -29,11 +29,12 @@ namespace BusinessLogic
         public abstract void StopAnimation();
         public abstract void StartAnimation();
 
+
         private class BallLogic : BallLogicAPI
         {
             private readonly double mapWidth;
             private readonly double mapHeight;
-
+            private readonly DataLogger logger;
             private readonly DataLayerAPI dataLayer;
             private  bool _inAction;
 
@@ -42,6 +43,7 @@ namespace BusinessLogic
                 this.mapWidth = mapWidth;
                 this.mapHeight = mapHeight;
                 this.dataLayer = DataLayerAPI.CreateData(mapWidth, mapHeight, "white"); 
+                this.logger = new DataLogger();
                 _inAction = false;
             }
             ///
@@ -214,6 +216,7 @@ namespace BusinessLogic
 
                 ball.X += ball.XDirection;
                 ball.Y += ball.YDirection;
+                logger.AddLog(ball);
             }
 
             ///
