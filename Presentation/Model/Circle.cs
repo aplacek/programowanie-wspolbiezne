@@ -15,6 +15,7 @@ namespace Presentation.Model
         }
         public abstract double X { get; set; }
         public abstract double Y { get; set; }
+        public abstract string Color { get; set; }
         public abstract double Radius { get; set; }
 
         public abstract event PropertyChangedEventHandler PropertyChanged;
@@ -24,6 +25,7 @@ namespace Presentation.Model
             private double _x;
             private double _y;
             private double _radius;
+            private string _color;
    
 
             private PropertyChangedEventHandler _propertyChanged;
@@ -47,6 +49,7 @@ namespace Presentation.Model
                 X = ball.X;
                 Y = ball.Y;
                 Radius = ball.Radius;
+                Color = ball.Color;
             }
 
 
@@ -59,6 +62,17 @@ namespace Presentation.Model
                     RaisePropertyChanged("Radius");
                 }
             }
+
+               public override string Color
+            {
+                get => _color;
+                set
+                {
+                    _color = value;
+                    RaisePropertyChanged("Color");
+                }
+            }
+
 
             public override double X
             {
@@ -90,6 +104,7 @@ namespace Presentation.Model
                 BallAPI ball = (BallAPI)sender;
                 X = ball.X;
                 Y = ball.Y;
+                Color = ball.Color;
             }
         }
 

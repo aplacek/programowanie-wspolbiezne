@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 
-    public abstract class BoardAPI
+    public abstract class BoardAPI 
     {
         public static BoardAPI CreateBoard(double height, double width, string color)
         {
