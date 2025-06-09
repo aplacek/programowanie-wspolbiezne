@@ -13,6 +13,7 @@ namespace DataTests
     public class DataLoggerTests
     {
         private string logFilePath;
+        private System.Timers.Timer colorTimer;
 
         [TestInitialize]
         public void Setup()
@@ -21,6 +22,10 @@ namespace DataTests
             logFilePath = Path.Combine(AppContext.BaseDirectory, "dataLogs.json");
             if (File.Exists(logFilePath))
                 File.Delete(logFilePath);
+
+            colorTimer = new System.Timers.Timer(3000);
+            colorTimer.AutoReset = true;
+            colorTimer.Start();
         }
 
         [TestMethod]
@@ -36,7 +41,8 @@ namespace DataTests
                 color: "blue", 
                 XDirection: -1, 
                 YDirection: 0, 
-                weight: 2
+                weight: 2,
+                timer: colorTimer
             );
             logger.AddLog(ball);
 
@@ -67,7 +73,8 @@ namespace DataTests
                 color: "green", 
                 XDirection: 1, 
                 YDirection: 0, 
-                weight: 1
+                weight: 1,
+                timer: colorTimer
             );
             ball.XSpeed = 50;
             ball.YSpeed = 0;

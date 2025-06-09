@@ -9,11 +9,15 @@ namespace DataTest
     public class BoardTest
     {
         private BoardAPI board;
+        private System.Timers.Timer colorTimer;
 
         [TestInitialize]
         public void Setup()
         {
             board = BoardAPI.CreateBoard(300, 400, "white");
+            colorTimer = new System.Timers.Timer(3000);
+            colorTimer.AutoReset = true;
+            colorTimer.Start();
         }
 
         [TestMethod]
@@ -27,7 +31,7 @@ namespace DataTest
         [TestMethod]
         public void TestAddBall()
         {
-            var ball = BallAPI.createBall(1, 50, 50, 10, "red", 1, 1, 5);
+            var ball = BallAPI.createBall(1, 50, 50, 10, "red", 1, 1, 5, colorTimer);
             board.AddBall(ball);
 
             Assert.AreEqual(1, board.GetBalls().Count, "Ball not added.");
@@ -37,8 +41,8 @@ namespace DataTest
         [TestMethod]
         public void TestRemoveBalls()
         {
-            var ball1 = BallAPI.createBall(1, 50, 50, 10, "red", 1, 1, 5);
-            var ball2 = BallAPI.createBall(2, 100, 100, 10, "blue", -1, -1, 5);
+            var ball1 = BallAPI.createBall(1, 50, 50, 10, "red", 1, 1, 5, colorTimer);
+            var ball2 = BallAPI.createBall(2, 100, 100, 10, "blue", -1, -1, 5, colorTimer);
 
             board.AddBall(ball1);
             board.AddBall(ball2);

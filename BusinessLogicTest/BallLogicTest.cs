@@ -27,8 +27,8 @@ namespace BusinessLogicTests
 
             Assert.AreEqual(initialCount + 1, newCount);
         }
-     
-  
+
+
         [TestMethod]
         public void TestMoveBall()
         {
@@ -47,8 +47,8 @@ namespace BusinessLogicTests
             Assert.AreNotEqual(oldY, ball.Y);
 
         }
-        
-    
+
+
         [TestMethod]
         public void TestElasticRebound()
         {
@@ -70,7 +70,7 @@ namespace BusinessLogicTests
             Assert.AreEqual(oldX1, ballTwo.XDirection);
 
         }
-  
+
         [TestMethod]
         public void TestCollisionOccurrence()
         {
@@ -84,7 +84,7 @@ namespace BusinessLogicTests
             Assert.IsNotNull(ballTwo);
 
         }
-   
+
         [TestMethod]
         public void TestClearMap()
         {
@@ -97,23 +97,56 @@ namespace BusinessLogicTests
 
             Assert.AreEqual(0, ballLogic.GetBalls().Count);
         }
-       
+
         [TestMethod]
         public void TestStartStopAnimation()
         {
             try
             {
                 ballLogic.StartAnimation();
-                Thread.Sleep(100); 
+                Thread.Sleep(100);
                 ballLogic.StopAnimation();
 
-                Assert.IsTrue(true); 
+                Assert.IsTrue(true);
             }
             catch (Exception ex)
             {
                 Assert.Fail($"Exception during animation start/stop: {ex.Message}");
             }
         }
+
+        [TestMethod]
+        public void ColorChangesAfterFunctionUse()
+        {
+            double mapWidth = 500;
+            double mapHeight = 500;
+            var logic = BallLogicAPI.CreateLogic(mapWidth, mapHeight);
+
+            logic.CreateBall(1, 100, 100, 10, "red", 1, 1);
+            var ball = logic.GetBalls().First();
+
+            string initialColor = ball.Color;
+
+            ball.ChangeColorRandomly();
+
+            Assert.AreNotEqual(initialColor, ball.Color, "Kolor powinien się zmienić po wywołaniu ChangeColorRandomly");
+        }
         
+        // [TestMethod]
+        // public void ColorChangesAfterTimerElapsed()
+        // {
+        //     double mapWidth = 500;
+        //     double mapHeight = 500;
+        //     var logic = BallLogicAPI.CreateLogic(mapWidth, mapHeight);
+
+        //     logic.CreateBall(1, 100, 100, 10, "red", 1, 1);
+        //     var ball = logic.GetBalls().First();
+
+        //     string initialColor = ball.Color;
+
+        //     Thread.Sleep(4000); // wait for the timer to trigger color change
+
+        //     Assert.AreNotEqual(initialColor, ball.Color, "Kolor powinien się zmienić po czasie 3 sekund");
+        // }
     }
 }

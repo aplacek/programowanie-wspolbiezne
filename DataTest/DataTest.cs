@@ -10,11 +10,16 @@ namespace DataTests
     public class DataLayerTests
     { 
         private DataLayerAPI dataLayer;
+        private System.Timers.Timer colorTimer;
 
         [TestInitialize]
         public void Setup()
         {
             dataLayer = DataLayerAPI.CreateData(400, 500, "white");
+
+            colorTimer = new System.Timers.Timer(3000);
+            colorTimer.AutoReset = true;
+            colorTimer.Start();
         }
 
         [TestMethod]
@@ -22,7 +27,7 @@ namespace DataTests
         {
             int initialCount = dataLayer.GetBalls().Count;
 
-            var ball = BallAPI.createBall(1, 100, 100, 10, "red", 1, 1, 2);
+            var ball = BallAPI.createBall(1, 100, 100, 10, "red", 1, 1, 2, colorTimer);
             dataLayer.AddBall(ball);
 
             int newCount = dataLayer.GetBalls().Count;
@@ -33,8 +38,8 @@ namespace DataTests
         [TestMethod]
         public void TestGetBalls()
         {
-            var ball1 = BallAPI.createBall(2, 150, 150, 10, "blue", 1, 0, 2);
-            var ball2 = BallAPI.createBall(3, 200, 200, 10, "green", 0, 1, 2);
+            var ball1 = BallAPI.createBall(2, 150, 150, 10, "blue", 1, 0, 2, colorTimer);
+            var ball2 = BallAPI.createBall(3, 200, 200, 10, "green", 0, 1, 2, colorTimer);
 
             dataLayer.AddBall(ball1);
             dataLayer.AddBall(ball2);
@@ -49,8 +54,8 @@ namespace DataTests
         [TestMethod]
         public void TestRemoveBalls()
         {
-            dataLayer.AddBall(BallAPI.createBall(4, 250, 250, 10, "yellow", 1, 1, 2));
-            dataLayer.AddBall(BallAPI.createBall(5, 300, 300, 10, "purple", -1, 0, 2));
+            dataLayer.AddBall(BallAPI.createBall(4, 250, 250, 10, "yellow", 1, 1, 2, colorTimer));
+            dataLayer.AddBall(BallAPI.createBall(5, 300, 300, 10, "purple", -1, 0, 2, colorTimer));
 
             dataLayer.RemoveBalls();
 

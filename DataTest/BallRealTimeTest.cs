@@ -9,10 +9,15 @@ namespace DataTests
     public class BallRealTimeTests
     {
         private BallAPI ball;
+        private System.Timers.Timer colorTimer;
 
         [TestInitialize]
         public void Setup()
         {
+            colorTimer = new System.Timers.Timer(3000);
+            colorTimer.AutoReset = true;
+            colorTimer.Start();
+
             ball = BallAPI.createBall(
                 ID: 1, 
                 X: 100, 
@@ -21,7 +26,8 @@ namespace DataTests
                 color: "red", 
                 XDirection: 1, 
                 YDirection: 0, 
-                weight: 1
+                weight: 1,
+                timer: colorTimer
             );
             ball.XSpeed = 10;
             ball.YSpeed = 0;

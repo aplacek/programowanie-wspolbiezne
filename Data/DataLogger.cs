@@ -16,6 +16,14 @@ namespace Data
         {
             pathToSave = Path.Combine(AppContext.BaseDirectory, "dataLogs.json");
 
+            // Uncomment the line below to save logs in a different directory, in "Presentation/Logs" folder
+            //pathToSave = Path.Combine(Directory.GetParent(AppContext.BaseDirectory).Parent.Parent.Parent.FullName, "Logs", "dataLogs.json");
+
+            if (pathToSave == null)
+            {
+                throw new ArgumentNullException(nameof(pathToSave), "Path to save the log file cannot be null.");
+            }   
+
             if (File.Exists(pathToSave))
             {
                 try

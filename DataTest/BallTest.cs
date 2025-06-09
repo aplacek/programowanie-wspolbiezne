@@ -8,11 +8,16 @@ namespace DataTest
     public class BallTest
     {
         private BallAPI ball;
+        private System.Timers.Timer colorTimer;
 
         [TestInitialize]
         public void Setup()
         {
-            ball = BallAPI.createBall(1, 50, 50, 10, "red", 1, 1, 1);
+            colorTimer = new System.Timers.Timer(3000);
+            colorTimer.AutoReset = true;
+            colorTimer.Start();
+
+            ball = BallAPI.createBall(1, 50, 50, 10, "red", 1, 1, 1, colorTimer);
         }
 
         [TestMethod]
@@ -22,7 +27,6 @@ namespace DataTest
             Assert.AreEqual(50, ball.X);
             Assert.AreEqual(50, ball.Y);
             Assert.AreEqual(10, ball.Radius);
-            Assert.AreEqual("red", ball.color);
             Assert.AreEqual(1, ball.XDirection);
             Assert.AreEqual(1, ball.YDirection);
             Assert.AreEqual(1, ball.weight);
