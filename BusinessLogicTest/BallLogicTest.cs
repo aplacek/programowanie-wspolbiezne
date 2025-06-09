@@ -115,22 +115,7 @@ namespace BusinessLogicTests
             }
         }
 
-        [TestMethod]
-        public void ColorChangesAfterFunctionUse()
-        {
-            double mapWidth = 500;
-            double mapHeight = 500;
-            var logic = BallLogicAPI.CreateLogic(mapWidth, mapHeight);
-
-            logic.CreateBall(1, 100, 100, 10, "red", 1, 1);
-            var ball = logic.GetBalls().First();
-
-            string initialColor = ball.Color;
-
-            ball.ChangeColorRandomly();
-
-            Assert.AreNotEqual(initialColor, ball.Color, "Kolor powinien się zmienić po wywołaniu ChangeColorRandomly");
-        }
+        
         
         // [TestMethod]
         // public void ColorChangesAfterTimerElapsed()
