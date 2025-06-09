@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Data;
+using System.Diagnostics;
+using System.Timers;
 
 namespace BusinessLogic
 {
@@ -37,6 +39,7 @@ namespace BusinessLogic
             private readonly DataLogger logger;
             private readonly DataLayerAPI dataLayer;
             private  bool _inAction;
+            private System.Timers.Timer? colorTimer; 
 
             public BallLogic(double mapWidth, double mapHeight)
             {
@@ -45,6 +48,11 @@ namespace BusinessLogic
                 this.dataLayer = DataLayerAPI.CreateData(mapWidth, mapHeight, "white"); 
                 this.logger = new DataLogger();
                 _inAction = false;
+
+                colorTimer = new System.Timers.Timer(3000);
+                colorTimer.AutoReset = true;
+                colorTimer.Start();
+                colorTimer.Elapsed += OnTimerElapsed;
             }
             ///
             /// Creating a ball - radius and weight values are random
@@ -63,7 +71,7 @@ namespace BusinessLogic
                 x = random.Next((int)radius, (int)(mapWidth - radius));
                 y = random.Next((int)radius, (int)(mapHeight - radius));
 
-                BallAPI ball = BallAPI.createBall(ballID, x, y, radius, color, XDirection, YDirection, weight);
+                BallAPI ball = BallAPI.createBall(ballID, x, y, radius, color, XDirection, YDirection, weight, colorTimer);
                 placed = true;
 
                 foreach (var other in GetBalls())
@@ -118,8 +126,11 @@ namespace BusinessLogic
             /// 
             public override void ClearMap()
             {
+
                 StopAnimation();
+
                 dataLayer.RemoveBalls();
+                colorTimer.Stop();
             }
             ///
             ///Checks whether the collision occured, if so, performs an elastic rebound
@@ -198,6 +209,7 @@ namespace BusinessLogic
             public override void StopAnimation()
             {
                 _inAction = false;
+                colorTimer.Stop();
             }
 
             public override void MoveBall(BallAPI ball)
@@ -250,6 +262,9 @@ namespace BusinessLogic
                         Thread.Sleep(16);
                     }
                 });
+                if (!colorTimer.Enabled){
+                    colorTimer.Start();
+                }
             }
 
             public override List<BallAPI> GetBalls()
@@ -260,6 +275,15 @@ namespace BusinessLogic
             public override double GetMapWidth() => mapWidth;
 
             public override double GetMapHeight() => mapHeight;
+
+
+            private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
+            {
+                foreach (var ball in GetBalls())
+                {
+                    ball.ChangeColorRandomly();
+                }
+            }
 
         }
     }

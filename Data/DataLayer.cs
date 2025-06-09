@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Data;
+using System.Diagnostics;
 
 namespace Data
 {
@@ -28,10 +29,10 @@ namespace Data
             private object _lock = new object();
             private BoardAPI board;
             private object _barrier = new object();
-             private int _counter = 0;
-             private int _countOfBalls = 0;
-             private double height;
-             private double width;
+            private int _counter = 0;
+            private int _countOfBalls = 0;
+            private double height;
+            private double width;
 
             public DataLayer(double height, double width, string colour)
             {
@@ -39,8 +40,6 @@ namespace Data
                 this.height = height;
                 this.width = width;
                 this._threads = new();
-                
-        
             }
 
            public override void AddBall(BallAPI ball)

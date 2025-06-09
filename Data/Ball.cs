@@ -1,12 +1,15 @@
 namespace Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
+using System;
+using System.Timers;
 
-public abstract class BallAPI{
+public abstract class BallAPI {
 
 
-    public static BallAPI createBall(int ID, double X, double Y, double radius, string color, int XDirection, int YDirection, double weight){
-        return new Ball(ID,  X,  Y, radius,  color,XDirection, YDirection, weight);
+    public static BallAPI createBall(int ID, double X, double Y, double radius, string color, int XDirection, int YDirection, double weight, System.Timers.Timer timer){
+        return new Ball(ID,  X,  Y, radius,  color,XDirection, YDirection, weight, timer);
     }
 
     public int ID { get; set; }
@@ -33,25 +36,38 @@ public abstract class BallAPI{
 
     public abstract event PropertyChangedEventHandler PropertyChanged;
 
+    public abstract void ChangeColorRandomly();
+
+    public abstract string Color { get; set; }
+
+    public abstract void OnTimerElapsed(object sender, ElapsedEventArgs e);
+
     private class Ball : BallAPI, INotifyPropertyChanged
     {
         private double _xSpeed;
         private double _ySpeed ;
         private readonly object _syncObject = new object();
-        public Ball(int ID, double X, double Y, double radius, string color, int XDirection, int YDirection, double weight)
+        private TimeSpan lastColorChangeTime;
+        private System.Timers.Timer timer;
+        private string _color; 
+
+        public Ball(int ID, double X, double Y, double radius, string color, int XDirection, int YDirection, double weight, System.Timers.Timer timer)
         {
             this.ID = ID;
             this.X = X;
             this.Y = Y;
-            this.color = color;
+            this.Color = color; 
             this.Radius = radius;
             this.XDirection = XDirection;
             this.weight = weight;
             this.YDirection = YDirection;
             this._xSpeed = 1;
             this._ySpeed = 1; 
-         
+            this.timer = timer;
+            this.timer = timer;
+            this.timer.Elapsed += this.OnTimerElapsed;
         }
+
             public override double XPosition
         {
             get => X;
@@ -63,6 +79,11 @@ public abstract class BallAPI{
                     OnPropertyChanged(nameof(XPosition));
                 }
             }
+        }
+
+        public override void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            ChangeColorRandomly();
         }
 
         public override double YPosition
@@ -79,6 +100,25 @@ public abstract class BallAPI{
         }
 
 
+        public override void ChangeColorRandomly()
+        {
+            string[] colors = { "red", "blue", "green", "yellow", "purple", "orange" };
+            Random rand = new Random();
+            this.Color = colors[rand.Next(colors.Length)];
+        }
+
+        public override string Color
+        {
+            get => _color;
+            set
+            {
+                if (_color != value)
+                {
+                    _color = value;
+                    OnPropertyChanged(nameof(Color));
+                }
+            }
+        }
 
         public override double XSpeed
         {

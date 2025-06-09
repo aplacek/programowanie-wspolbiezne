@@ -40,7 +40,7 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Path Fill="Black" Stroke="Black">
+                    <Path Fill="{Binding Color}" Stroke="{Binding Color}">
                         <Path.Data>
                             <EllipseGeometry RadiusX="{Binding Radius}"
                                              RadiusY="{Binding Radius}"/>
